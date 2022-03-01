@@ -2,24 +2,51 @@ require('dotenv').config();
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
+const session = require("express-session");
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var passport = require('passport');
 var FacebookStrategy = require('passport-facebook');
+const mongoose = require("mongoose");
 var User = require('./models/user');
+
+const mongoDb = process.env.MONGODB_URL;
+mongoose.connect(mongoDb, { useUnifiedTopology: true, useNewUrlParser: true });
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "mongo connection error"));
 
 
 passport.use(new FacebookStrategy({
   clientID: process.env['FACEBOOK_APP_ID'],
   clientSecret: process.env['FACEBOOK_APP_SECRET'],
-  callbackURL: '/oauth2/facebook/redirect'
+  callbackURL: '/login/oauth2/facebook/redirect'
 },
-  function (accessToken, refreshToken, profile, cb) {
-    User.findOrCreate({ facebookId: profile.id }, function (err, user) {
-      return cb(err, user);
-    })
-
-  }));
+  function (accessToken, refreshToken, profile, done) {
+    User.findOne({
+            'facebookId': profile.id 
+        }, function(err, user) {
+            if (err) {
+                return done(err);
+            }
+            //No user was found... so create a new user with values from Facebook (all the profile. stuff)
+            if (!user) {
+                const user = new User({
+                    name: profile.displayName,
+                    email: profile.emails[0].value,
+                    username: profile.username,
+                    provider: 'facebook',
+                    facebookId: profile.id
+                });
+                user.save(function(err) {
+                    if (err) console.log(err);
+                    return done(err, user);
+                });
+            } else {
+                //found user. Return
+                return done(err, user);
+            }
+        });
+    }));
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');

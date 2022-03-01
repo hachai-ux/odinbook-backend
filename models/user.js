@@ -4,8 +4,13 @@ var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
     username: { type: String, required: true, maxLength: 100 },
-    password: { type: String, required: true, maxLength: 100 },
-    facebookId: { type: String }
+    password: { type: String, maxLength: 100 },
+    name: { type: String},
+    post: { type: Schema.Types.ObjectId, ref: 'Post' },
+    friend_list: { type: Schema.Types.ObjectId, ref: 'User' },
+    friend_request: { type: Schema.Types.ObjectId, ref: 'User' },
+    facebookId: { type: String },
+
 
 })
 
