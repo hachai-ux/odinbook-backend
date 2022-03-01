@@ -11,7 +11,7 @@ var FacebookStrategy = require('passport-facebook');
 passport.use(new FacebookStrategy({
     clientID: process.env['FACEBOOK_APP_ID'],
     clientSecret: process.env['FACEBOOK_APP_SECRET'],
-    callbackURL: 'https://www.example.com/oauth2/redirect/facebook'
+    callbackURL: '/oauth2/redirect/facebook'
   },
   function(accessToken, refreshToken, profile, cb) {
     db.get('SELECT * FROM federated_credentials WHERE provider = ? AND subject = ?', [
