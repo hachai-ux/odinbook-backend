@@ -3,9 +3,21 @@ var router = express.Router();
 var passport = require('passport');
 const jwt = require('jsonwebtoken');
 
-/* POST login. */
-router.post('/oauth2/facebook', function (req, res, next) {
+/* GET login. */
+//Authenticate via Facebook
+router.get('/oauth2/facebook', function (req, res, next) {
 
+    passport.authenticate('facebook');
+});
+
+
+//Login user and create JWT
+router.get('/oauth2/facebook/redirect', function (req, res, next) {
+
+    //send status code 400 if login failed
+    //otherwise login the user,
+    //and create JWT to pass on logged in user as a token
+ 
 passport.authenticate('facebook', {session: false}, (err, user, info) => {
         if (err || !user) {
             return res.status(400).json({
@@ -26,22 +38,6 @@ const token = jwt.sign(user, process.env.JWT_SECRET);
         });
     })(req, res);
 });
-
-
-
-router.get('/oauth2/facebook', function (req, res, next) {
   
-    passport.authenticate('facebook');
-    
-});
-
-router.get('/oauth2/facebook/redirect', function (req, res, next) {
-  
-    passport.authenticate('facebook', { failureRedirect: '/login' }, (err, user, info) => {
-        res.redirect('/');
-    }
-    )
-});
-
 
 module.exports = router;

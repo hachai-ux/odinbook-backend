@@ -16,6 +16,7 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "mongo connection error"));
 
 
+//Authenticate user with facebook
 passport.use(new FacebookStrategy({
   clientID: process.env['FACEBOOK_APP_ID'],
   clientSecret: process.env['FACEBOOK_APP_SECRET'],
@@ -48,6 +49,7 @@ passport.use(new FacebookStrategy({
         });
   }));
     
+  //Persist logged in user with JSON WEB TOKEN
   passport.use(new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
         secretOrKey : process.env.JWT_SECRET
@@ -82,7 +84,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', passport.authenticate('jwt', {session: false}), usersRouter);
+//protect requests to user route
+app.use('/users', passport.authenticate('jwt', { session: false }), usersRouter);
+app.use('/login', loginRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
