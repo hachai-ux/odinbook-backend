@@ -46,7 +46,24 @@ passport.use(new FacebookStrategy({
                 return done(err, user);
             }
         });
-    }));
+  }));
+    
+  passport.use(new JWTStrategy({
+        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+        secretOrKey : process.env.JWT_SECRET
+    },
+    function (jwtPayload, cb) {
+
+        //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
+        return User.findOneById(jwtPayload.id)
+            .then(user => {
+                return cb(null, user);
+            })
+            .catch(err => {
+                return cb(err);
+            });
+    }
+));
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -65,7 +82,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/users', passport.authenticate('jwt', {session: false}), usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
