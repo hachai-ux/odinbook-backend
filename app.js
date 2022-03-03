@@ -9,6 +9,9 @@ var passport = require('passport');
 var FacebookStrategy = require('passport-facebook');
 const mongoose = require("mongoose");
 var User = require('./models/user');
+const passportJWT = require("passport-jwt");
+const JWTStrategy = passportJWT.Strategy;
+const ExtractJWT = passportJWT.ExtractJwt;
 
 const mongoDb = process.env.MONGODB_URL;
 mongoose.connect(mongoDb, { useUnifiedTopology: true, useNewUrlParser: true });
