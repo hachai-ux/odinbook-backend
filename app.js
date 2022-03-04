@@ -1,6 +1,7 @@
 require('dotenv').config();
 var createError = require('http-errors');
 var express = require('express');
+var cors = require('cors')
 var path = require('path');
 const session = require("express-session");
 var cookieParser = require('cookie-parser');
@@ -25,7 +26,8 @@ passport.use(new FacebookStrategy({
   clientSecret: process.env['FACEBOOK_APP_SECRET'],
   callbackURL: '/login/oauth2/facebook/redirect'
 },
-  function (accessToken, refreshToken, profile, done) {
+    function (accessToken, refreshToken, profile, done) {
+        console.log('use facebook strategy');
     User.findOne({
             'facebookId': profile.id 
         }, function(err, user) {
@@ -68,7 +70,10 @@ passport.use(new FacebookStrategy({
                 return cb(err);
             });
     }
-));
+  ));
+
+
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -80,16 +85,31 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(session({ secret: "cats", resave: false, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+  passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
+
 app.use('/', indexRouter);
 //protect requests to user route
 app.use('/users', passport.authenticate('jwt', { session: false }), usersRouter);
 app.use('/login', loginRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
