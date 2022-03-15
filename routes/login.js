@@ -15,17 +15,10 @@ router.get('/oauth2/facebook', passport.authenticate('facebook', {session: false
     //otherwise login the user,
     //and create JWT to pass on logged in user as a token
 router.get('/oauth2/facebook/redirect', passport.authenticate('facebook', { session: false }), (req, res) => {
-    /*
-    if (err || !user) {
-        return res.status(400).json({
-            message: 'Something is not right',
-            user: user
-        });
-    }
-    */
-    
-    
-/*
+   //passport.authenticate() middleware invokes req.login() automatically.
+   //When the login operation completes, user will be assigned to req.user.
+
+   /*
     req.login(req.user, { session: false }, (err) => {
         if (err) {
             res.send(err);
@@ -37,8 +30,8 @@ router.get('/oauth2/facebook/redirect', passport.authenticate('facebook', { sess
         return res.json({ user: req.user, token });
     });
     */
-    res.redirect('/');
-    //console.log(req.user);
+    //res.redirect('/');
+    console.log(req.user);
     /*
     const token = jwt.sign(req.user, process.env.JWT_SECRET);
    
