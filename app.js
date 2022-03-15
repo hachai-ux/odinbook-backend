@@ -24,7 +24,8 @@ db.on("error", console.error.bind(console, "mongo connection error"));
 passport.use(new FacebookStrategy({
   clientID: process.env['FACEBOOK_APP_ID'],
   clientSecret: process.env['FACEBOOK_APP_SECRET'],
-  callbackURL: '/login/oauth2/facebook/redirect'
+  callbackURL: '/login/oauth2/facebook/redirect',
+  profileFields: ['id', 'displayName', 'photos', 'email', 'username']
 },
     function (accessToken, refreshToken, profile, done) {
         console.log('use facebook strategy');
@@ -35,7 +36,8 @@ passport.use(new FacebookStrategy({
                 return done(err);
             }
             //No user was found... so create a new user with values from Facebook (all the profile. stuff)
-            if (!user) {
+      if (!user) {
+        console.log(profile);
                 const user = new User({
                     name: profile.displayName,
                     email: profile.emails[0].value,
@@ -92,10 +94,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(session({ secret: "cats", resave: false, saveUninitialized: false }));
-app.use(passport.initialize());
-app.use(passport.session());
 
+
+//app.use(session({ secret: "cats", resave: false, saveUninitialized: false }));
+app.use(passport.initialize());
+//app.use(passport.session());
+
+/*
   passport.serializeUser(function(user, done) {
   done(null, user.id);
 });
@@ -104,6 +109,7 @@ passport.deserializeUser(function(id, done) {
     done(err, user);
   });
 });
+*/
 
 app.use('/', indexRouter);
 //protect requests to user route

@@ -3,6 +3,7 @@ var router = express.Router();
 var passport = require('passport');
 const jwt = require('jsonwebtoken');
 
+
 /* GET login. */
 //Authenticate via Facebook
 router.get('/oauth2/facebook', passport.authenticate('facebook', {session: false}));
@@ -13,26 +14,33 @@ router.get('/oauth2/facebook', passport.authenticate('facebook', {session: false
     //send status code 400 if login failed
     //otherwise login the user,
     //and create JWT to pass on logged in user as a token
-router.get('/oauth2/facebook/redirect', passport.authenticate('facebook', { session: false }, (err, user, info) => {
+router.get('/oauth2/facebook/redirect', passport.authenticate('facebook', { session: false }, (req, res) => {
+    /*
     if (err || !user) {
         return res.status(400).json({
             message: 'Something is not right',
             user: user
         });
     }
+    */
     
     
-
-    req.login(user, { session: false }, (err) => {
+/*
+    req.login(req.user, { session: false }, (err) => {
         if (err) {
             res.send(err);
         }
 
         // generate a signed json web token with the contents of user object and return it in the response
 
-        const token = jwt.sign(user, process.env.JWT_SECRET);
-        return res.json({ user, token });
+        const token = jwt.sign(req.user, process.env.JWT_SECRET);
+        return res.json({ user: req.user, token });
     });
+    */
+    console.log(req.user);
+    const token = jwt.sign(req.user, process.env.JWT_SECRET);
+    res.json({ user: req.user, token });
+    res.redirect('/');
     
 }));
   
