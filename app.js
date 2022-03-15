@@ -25,7 +25,7 @@ passport.use(new FacebookStrategy({
   clientID: process.env['FACEBOOK_APP_ID'],
   clientSecret: process.env['FACEBOOK_APP_SECRET'],
   callbackURL: '/login/oauth2/facebook/redirect',
-  profileFields: ['id', 'displayName', 'photos', 'email', 'username']
+  profileFields: ['id', 'displayName', 'photos', 'email']
 },
     function (accessToken, refreshToken, profile, done) {
         console.log('use facebook strategy');
@@ -40,13 +40,13 @@ passport.use(new FacebookStrategy({
         console.log(profile);
                 const user = new User({
                     name: profile.displayName,
-                    email: profile.emails[0].value,
-                    username: profile.username,
+                    email: profile.email,
                     provider: 'facebook',
                     facebookId: profile.id
                 });
+        console.log(user);
                 user.save(function(err) {
-                    if (err) console.log(err);
+                  if (err) { return console.log(err) };
                     return done(err, user);
                 });
             } else {

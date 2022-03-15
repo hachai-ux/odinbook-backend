@@ -14,7 +14,7 @@ router.get('/oauth2/facebook', passport.authenticate('facebook', {session: false
     //send status code 400 if login failed
     //otherwise login the user,
     //and create JWT to pass on logged in user as a token
-router.get('/oauth2/facebook/redirect', passport.authenticate('facebook', { session: false }, (req, res) => {
+router.get('/oauth2/facebook/redirect', passport.authenticate('facebook', { session: false }), (req, res) => {
     /*
     if (err || !user) {
         return res.status(400).json({
@@ -37,12 +37,15 @@ router.get('/oauth2/facebook/redirect', passport.authenticate('facebook', { sess
         return res.json({ user: req.user, token });
     });
     */
-    console.log(req.user);
+    res.redirect('/');
+    //console.log(req.user);
+    /*
     const token = jwt.sign(req.user, process.env.JWT_SECRET);
+   
     res.json({ user: req.user, token });
     res.redirect('/');
-    
-}));
+     */
+});
   
 
 module.exports = router;

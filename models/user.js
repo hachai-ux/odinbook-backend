@@ -3,7 +3,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
-    username: { type: String, required: true, maxLength: 100 },
+    username: { type: String, maxLength: 100 },
+    email: {type: String, maxLength: 100},
     password: { type: String, maxLength: 100 },
     name: { type: String},
     post: { type: Schema.Types.ObjectId, ref: 'Post' },
