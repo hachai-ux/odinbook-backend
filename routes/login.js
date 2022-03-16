@@ -18,26 +18,15 @@ router.get('/oauth2/facebook/redirect', passport.authenticate('facebook', { sess
    //passport.authenticate() middleware invokes req.login() automatically.
    //When the login operation completes, user will be assigned to req.user.
 
-   /*
-    req.login(req.user, { session: false }, (err) => {
-        if (err) {
-            res.send(err);
-        }
-
-        // generate a signed json web token with the contents of user object and return it in the response
-
-        const token = jwt.sign(req.user, process.env.JWT_SECRET);
-        return res.json({ user: req.user, token });
-    });
-    */
-    //res.redirect('/');
+  
     console.log(req.user);
-    /*
-    const token = jwt.sign(req.user, process.env.JWT_SECRET);
+    
+    // generate a signed json web token with the contents of user object and return it in the response
+    const token = jwt.sign(req.user.toJSON(), process.env.JWT_SECRET);
    
-    res.json({ user: req.user, token });
-    res.redirect('/');
-     */
+    res.json({ user: req.user, token});
+    //res.redirect('/');
+     
 });
   
 
