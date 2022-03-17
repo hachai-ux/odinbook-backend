@@ -95,10 +95,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-
-//app.use(session({ secret: "cats", resave: false, saveUninitialized: false }));
+//use session to store origin url for the facebook redirect
+app.use(session({ secret: "cats", resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
-//app.use(passport.session());
+app.use(passport.session());
 
 /*
   passport.serializeUser(function(user, done) {

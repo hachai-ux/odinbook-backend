@@ -6,7 +6,13 @@ const jwt = require('jsonwebtoken');
 
 /* GET login. */
 //Authenticate via Facebook
-router.get('/oauth2/facebook', passport.authenticate('facebook', {session: false}));
+router.get('/oauth2/facebook', (req, res, next) => {
+
+    //save original url to session
+    req.session.redirectTo = req.get("referer");
+
+  next();
+}, passport.authenticate('facebook', { session: false }));
 
 
 //Login user and create JWT
@@ -18,10 +24,7 @@ router.get('/oauth2/facebook/redirect', passport.authenticate('facebook', { sess
    //passport.authenticate() middleware invokes req.login() automatically.
    //When the login operation completes, user will be assigned to req.user.
 
-    var host = req.get('host');
-    var origin = req.get('origin');
-    console.log(host);
-     console.log(origin);
+ 
     console.log(req.user);
     
     // generate a signed json web token with the contents of user object and return it in the response
@@ -29,7 +32,7 @@ router.get('/oauth2/facebook/redirect', passport.authenticate('facebook', { sess
     
     //send JWT over via cookie(only sessions are server-side)
     res.cookie('jwt', token);
-    res.redirect('http://localhost:5000');
+    res.redirect(req.session.redirectTo);
     //res.redirect('/');
      
 });
