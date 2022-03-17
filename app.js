@@ -113,6 +113,7 @@ passport.deserializeUser(function(id, done) {
 
 app.use('/', indexRouter);
 //protect requests to user route
+//logs in user with JWT
 app.use('/users', passport.authenticate('jwt', { session: false }), usersRouter);
 app.use('/login', loginRouter);
 
