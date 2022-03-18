@@ -62,9 +62,9 @@ passport.use(new FacebookStrategy({
         secretOrKey : process.env.JWT_SECRET
     },
     function (jwtPayload, cb) {
-
+        console.log(jwtPayload._id)
         //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
-        return User.findOneById(jwtPayload.id)
+        return User.findById(jwtPayload._id)
             .then(user => {
                 return cb(null, user);
             })
@@ -118,7 +118,7 @@ app.use('/users', passport.authenticate('jwt', { session: false }), usersRouter)
 app.use('/login', loginRouter);
 
 
-// catch 404 and forward to error handler
+// catch 404 and foward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
